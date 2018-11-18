@@ -229,6 +229,24 @@ function _isDraw(squares) {
   return (draw.length === 0);
 }
 
+function isTerminal(board) {
+  if(gameState(board).over) {
+    return true;
+  }
+  return false;
+}
+
+function availMoves(board) {
+  let moves;
+  moves = board..map( (element, index) => {
+              if( i === null) {
+                  return idx
+              }
+          }).filter(item => item != undefined );
+  //console.log(moves);
+  return moves;
+}
+
 // ========================================
 
 ReactDOM.render(
