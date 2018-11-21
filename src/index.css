@@ -20,9 +20,16 @@ ol, ul {
 }
 
 .status {
-  color: green;
   font-weight: 700;
   margin-bottom: 10px;
+}
+
+.success {
+  color: green;
+}
+
+.warning {
+  color: red;
 }
 
 .square {
