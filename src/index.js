@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App.js';
+//import App from './App.js';
 
 function Square(props) {
   let className = "square";
@@ -64,6 +64,7 @@ class Board extends Component {
       </div>
     );
   }
+
 }
 
 class Game extends Component {
@@ -81,6 +82,7 @@ class Game extends Component {
   }
   
   handleClick(i) {
+
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const location = this.state.location.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
@@ -116,6 +118,7 @@ class Game extends Component {
         locations[i]
       ]),
     });
+
   }
   
   jumpTo(step) {
@@ -130,16 +133,46 @@ class Game extends Component {
     //console.log(hist);
     this.setState({
       history: hist.reverse(),
+      location: this.state.location.reverse(),
     });
+  }
+
+  isTerminal(board) {
+    if(gameState(board).over) {
+      return true;
+    }
+    return false;
+  }
+
+  selectSign(evt) {
+    if (this.state.player) {
+      return;
+    }
+    this.setState({
+      player: evt.target.value,
+      ai: (evt.target.value === 'X') ? 'O' : 'X',
+    });
+  }
+
+  availMoves(board) {
+    let moves;
+    moves = board.map( (element, index) => {
+                if( element === null) {
+                    return index;
+                }
+                return null;
+            }).filter(item => item !== null );
+    //console.log(moves);
+    return moves;
   }
     
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const gameStats = gameState(current.squares);
-    
+
     const moves = history.map((step, move) => {
-      const desc = move ? 'Go to move #' + move +' ('+this.state.location[move].col+','+this.state.location[move].row+')' : 'Start';
+      const desc = move ? 'Go to move  ('+this.state.location[move].col+','+this.state.location[move].row+')' : 'Start';
       return (
         <HistoryList
           key={ move }
@@ -175,6 +208,11 @@ class Game extends Component {
         </div>
         <div className="game-info">
           <div className="status success">{ status }</div>
+          <div className="game-info">
+            <label className="status success">Play As</label><br/>
+              <input onClick={ (event) => this.selectSign(event) } type="radio" value="X" name="playas" defaultChecked={true}/>X<br/>
+              <input onClick={ (event) => this.selectSign(event) } type="radio" value="O" name="playas" />O<br/>
+          </div>
           <ol>{ moves }</ol>
           <div>
             <button onClick={ (history) => this.sortList(this.state.history) } className="ctrl">Sort History</button>
@@ -229,23 +267,15 @@ function _isDraw(squares) {
   return (draw.length === 0);
 }
 
-function isTerminal(board) {
-  if(gameState(board).over) {
-    return true;
-  }
-  return false;
-}
+/*const max = (a, b) => {
+  let ret = (a < b) ? b : a;
+  return ret;
+};
 
-function availMoves(board) {
-  let moves;
-  moves = board..map( (element, index) => {
-              if( i === null) {
-                  return idx
-              }
-          }).filter(item => item != undefined );
-  //console.log(moves);
-  return moves;
-}
+const min = (a, b) => {
+  let ret = (a < b) ? a : b;
+  return ret;
+};*/
 
 // ========================================
 
