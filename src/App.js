@@ -4,6 +4,8 @@ import './App.css';
 import HistoryList from './components/HistoryList';
 import Board from './components/Board';
 
+import AI from './AI';
+
 class Game extends Component {
     
   constructor(props) {
@@ -12,14 +14,53 @@ class Game extends Component {
       history: [{
         squares: Array(9).fill(null),
       }],
+      huPlayer: 'O',
+      aiPlayer: 'X',
       xIsNext: true,
+      aiTurn: true,
       stepNumber: 0,
       location: [{col: 0, row: 0}], //Display the location for each move in the format (col, row)
     };
   }
 
   componentDidMount() {
-    console.log("mounted!");  
+    if (this.state.aiTurn) {
+      this.aiTurn();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.state.aiTurn) {
+      this.aiTurn();
+    }
+  }
+
+  aiTurn() {
+
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const location = this.state.location.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    const ai = new AI(this.state.huPlayer, this.state.aiPlayer);
+
+    if (gameState(squares).over) {
+      return;
+    }
+
+    let move = ai.search(squares);
+    squares[move] = this.state.aiPlayer;
+
+    this.setState({ 
+      history: history.concat([{
+        squares: squares,
+      }]),
+      stepNumber: history.length,
+      xIsNext: !this.state.xIsNext,
+      aiTurn: !this.state.aiTurn,
+      location: location.concat([
+        getLocations(move)
+      ]),
+    });
   }
   
   handleClick(i) {
@@ -30,24 +71,19 @@ class Game extends Component {
     const squares = current.squares.slice();
     const gameStats = gameState(squares);
     
-    const locations = [
-        {col: 1, row: 1},
-        {col: 2, row: 1},
-        {col: 3, row: 1},
-        {col: 1, row: 2},
-        {col: 2, row: 2},
-        {col: 3, row: 2},
-        {col: 1, row: 3},
-        {col: 2, row: 3},
-        {col: 3, row: 3},
-    ];
-    
-    if( gameStats.over || squares[i] ) {
-        //console.log(gameStats);
-        return;
+    if( gameStats.over || squares[i]) {
+      //console.log(gameStats);
+      return;
+    }
+
+    //if next player is X but the player is not
+    //stop the play
+    if (this.state.xIsNext && this.state.huPlayer !== 'X') {
+      return;
     }
     
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    //squares[i] = this.state.xIsNext ? 'X' : 'O';
+    squares[i] = this.state.huPlayer;
     
     this.setState({ 
       history: history.concat([{
@@ -55,8 +91,9 @@ class Game extends Component {
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
+      aiTurn: !this.state.aiTurn,
       location: location.concat([
-        locations[i]
+        getLocations(i)
       ]),
     });
 
@@ -67,6 +104,7 @@ class Game extends Component {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
+      aiTurn: false,
     });
   }
   
@@ -90,8 +128,8 @@ class Game extends Component {
       return;
     }
     this.setState({
-      player: evt.target.value,
-      ai: (evt.target.value === 'X') ? 'O' : 'X',
+      huPlayer: evt.target.value,
+      aiPlayer: (evt.target.value === 'X') ? 'O' : 'X',
     });
   }
 
@@ -151,8 +189,8 @@ class Game extends Component {
           <div className="status success">{ status }</div>
           <div className="game-info">
             <label className="status success">Play As</label><br/>
-              <input onClick={ (event) => this.selectSign(event) } type="radio" value="X" name="playas" defaultChecked={true}/>X<br/>
-              <input onClick={ (event) => this.selectSign(event) } type="radio" value="O" name="playas" />O<br/>
+              <input onClick={ (event) => this.selectSign(event) } type="radio" value="X" name="playas" />X<br/>
+              <input onClick={ (event) => this.selectSign(event) } type="radio" value="O" name="playas" defaultChecked={true}/>O<br/>
           </div>
           <ol>{ moves }</ol>
           <div>
@@ -164,6 +202,9 @@ class Game extends Component {
   }
 }
 
+/**
+* Utility Functions
+*/
 function gameState(board) {
   const state = {
     over: false,
@@ -208,16 +249,24 @@ function _isDraw(squares) {
   return (draw.length === 0);
 }
 
-/*const max = (a, b) => {
-  let ret = (a < b) ? b : a;
-  return ret;
-};
+function getLocations(index) {
+  const locations = [
+        {col: 1, row: 1},
+        {col: 2, row: 1},
+        {col: 3, row: 1},
+        {col: 1, row: 2},
+        {col: 2, row: 2},
+        {col: 3, row: 2},
+        {col: 1, row: 3},
+        {col: 2, row: 3},
+        {col: 3, row: 3},
+      ];
 
-const min = (a, b) => {
-  let ret = (a < b) ? a : b;
-  return ret;
-};*/
+  return locations[index];
+}
 
-// ========================================
+/**
+* End Utility Functions
+*/
 
 export default Game;
