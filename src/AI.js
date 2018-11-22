@@ -1,8 +1,8 @@
 export default class AI {
 
 	constructor(min, max) {
-		let minPlayer = min; //X
-		let maxPlayer = max; //O
+		this.minPlayer = min;
+		this.maxPlayer = max;
 	}
 
 	search(board) {
