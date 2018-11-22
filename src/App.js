@@ -4,6 +4,8 @@ import './App.css';
 import HistoryList from './components/HistoryList';
 import Board from './components/Board';
 
+import AI from './AI';
+
 class Game extends Component {
     
   constructor(props) {
@@ -39,21 +41,14 @@ class Game extends Component {
     const location = this.state.location.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
+    const ai = new AI(this.state.huPlayer, this.state.aiPlayer);
 
-    const moves = this.availMoves(squares);
-
-    if (moves.length === 0 || gameState(squares).over) {
+    if (gameState(squares).over) {
       return;
     }
-    
-    let randMove = (Math.random()*moves.length).toFixed();
-    //console.log("Playing: "+moves[randMove]);
-    if(moves[randMove]) {//play the move if its not undefined
-      squares[moves[randMove]] = this.state.aiPlayer;
-    } else { //otherwise play the first available move
-      squares[moves[0]] = this.state.aiPlayer;
-    }
-    //console.log(squares);
+
+    let move = ai.search(squares);
+    squares[move] = this.state.aiPlayer;
 
     this.setState({ 
       history: history.concat([{
@@ -63,7 +58,7 @@ class Game extends Component {
       xIsNext: !this.state.xIsNext,
       aiTurn: !this.state.aiTurn,
       location: location.concat([
-        getLocations(randMove)
+        getLocations(move)
       ]),
     });
   }
