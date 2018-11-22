@@ -47,7 +47,7 @@ class Game extends Component {
       return;
     }
 
-    let move = ai.search(squares);
+    let move = ai.play(squares);
     squares[move] = this.state.aiPlayer;
 
     this.setState({ 

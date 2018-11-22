@@ -5,7 +5,7 @@ export default class AI {
 		this.maxPlayer = max;
 	}
 
-	search(board) {
+	play(board) {
 		let bestMoveVal = -Infinity;
 		let move = 0;
 
@@ -13,7 +13,7 @@ export default class AI {
 			let copy = this.move(i, this.maxPlayer, board);
 
 			if(copy) {
-				let predictedMoveVal = this.minMoveVal(copy);
+				let predictedMoveVal = this.minimax(copy, false);
 
 				if (predictedMoveVal > bestMoveVal) {
 					bestMoveVal = predictedMoveVal;
@@ -25,50 +25,45 @@ export default class AI {
 		return move;
 	}
 
-	minMoveVal(board) {
+	minimax(board, maximizingPlayer) {
 		if (this.isWinner(this.maxPlayer, board)) return Infinity;
 		if (this.isWinner(this.minPlayer, board)) return -Infinity;
+		if (this.isDraw(board)) return 0;
 
-		if (this.isTie(board)) return 0;
+		if(maximizingPlayer) {
+			let bestMoveVal = -Infinity;
 
-		let bestMoveVal = Infinity;
+			for (let i = 0; i < board.length; i++) {
+				let copy = this.move(i, this.maxPlayer, board);
 
-		for (let i = 0; i < board.length; i++) {
-			let copy = this.move(i, this.minPlayer, board);
+				if(copy) {
+					let predictedMoveVal = this.minimax(copy, false);
 
-			if(copy) {
-				let predictedMoveVal = this.maxMoveVal(copy);
-
-				if (predictedMoveVal < bestMoveVal) {
-					bestMoveVal = predictedMoveVal;
+					if (predictedMoveVal > bestMoveVal) {
+						bestMoveVal = predictedMoveVal;
+					}
 				}
 			}
-		}
 
-		return bestMoveVal;
-	}
+			return bestMoveVal;
 
-	maxMoveVal(board) {
-		if (this.isWinner(this.maxPlayer, board)) return Infinity;
-		if (this.isWinner(this.minPlayer, board)) return -Infinity;
+		} else {
+			let bestMoveVal = Infinity;
 
-		if (this.isTie(board)) return 0;
+			for (let i = 0; i < board.length; i++) {
+				let copy = this.move(i, this.minPlayer, board);
 
-		let bestMoveVal = -Infinity;
+				if(copy) {
+					let predictedMoveVal = this.minimax(copy, true);
 
-		for (let i = 0; i < board.length; i++) {
-			let copy = this.move(i, this.maxPlayer, board);
-
-			if(copy) {
-				let predictedMoveVal = this.minMoveVal(copy);
-
-				if (predictedMoveVal > bestMoveVal) {
-					bestMoveVal = predictedMoveVal;
+					if (predictedMoveVal < bestMoveVal) {
+						bestMoveVal = predictedMoveVal;
+					}
 				}
 			}
-		}
 
-		return bestMoveVal;
+			return bestMoveVal;
+		}
 	}
 
 	move(move, player, board) {
@@ -79,7 +74,7 @@ export default class AI {
 			return copy;
 		}
 
-		return;
+		return false;
 	}
 
 	clone(board) {
@@ -104,9 +99,11 @@ export default class AI {
       			return player === board[a];
     		}
   		}
+
+  		return false;
 	}
 
-	isTie(board) {
+	isDraw(board) {
 		return !board.some(x=>x===null);
 	}
 }
