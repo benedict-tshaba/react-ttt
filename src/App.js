@@ -1,49 +1,223 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-class App extends Component {
+import './App.css';
+import HistoryList from './components/HistoryList';
+import Board from './components/Board';
+
+class Game extends Component {
+    
   constructor(props) {
     super(props);
-    this.state = {date: new Date()};
+    this.state = {
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      xIsNext: true,
+      stepNumber: 0,
+      location: [{col: 0, row: 0}], //Display the location for each move in the format (col, row)
+    };
   }
-  
+
   componentDidMount() {
-    this.timerID = setInterval(
-        () => { this.tick() } , 1000
-    );  
+    console.log("mounted!");  
   }
   
-  componentWillUnmount() {
-    clearInterval(this.timerID);  
+  handleClick(i) {
+
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const location = this.state.location.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    const gameStats = gameState(squares);
+    
+    const locations = [
+        {col: 1, row: 1},
+        {col: 2, row: 1},
+        {col: 3, row: 1},
+        {col: 1, row: 2},
+        {col: 2, row: 2},
+        {col: 3, row: 2},
+        {col: 1, row: 3},
+        {col: 2, row: 3},
+        {col: 3, row: 3},
+    ];
+    
+    if( gameStats.over || squares[i] ) {
+        //console.log(gameStats);
+        return;
+    }
+    
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    
+    this.setState({ 
+      history: history.concat([{
+        squares: squares,
+      }]),
+      stepNumber: history.length,
+      xIsNext: !this.state.xIsNext,
+      location: location.concat([
+        locations[i]
+      ]),
+    });
+
   }
   
-  tick() {
+  jumpTo(step) {
+    //console.log(step);
     this.setState({
-       date: new Date() 
-    }); 
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    });
   }
   
+  sortList(hist) {
+    //console.log(hist);
+    this.setState({
+      history: hist.reverse(),
+      location: this.state.location.reverse(),
+    });
+  }
+
+  isTerminal(board) {
+    if(gameState(board).over) {
+      return true;
+    }
+    return false;
+  }
+
+  selectSign(evt) {
+    if (this.state.player) {
+      return;
+    }
+    this.setState({
+      player: evt.target.value,
+      ai: (evt.target.value === 'X') ? 'O' : 'X',
+    });
+  }
+
+  availMoves(board) {
+    let moves;
+    moves = board.map( (element, index) => {
+                if( element === null) {
+                    return index;
+                }
+                return null;
+            }).filter(item => item !== null );
+    //console.log(moves);
+    return moves;
+  }
+    
   render() {
+    const history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const gameStats = gameState(current.squares);
+
+    const moves = history.map((step, move) => {
+      const desc = move ? 'Go to move  ('+this.state.location[move].col+','+this.state.location[move].row+')' : 'Start';
+      return (
+        <HistoryList
+          key={ move }
+          currentMove = { move }
+          step = { this.state.stepNumber }
+          id={ move }
+          desc={ desc }
+          onClick = { () => this.jumpTo(move) }
+        />
+      );
+    });
+    
+    let status;
+    
+    if(gameStats.over) {
+      if(gameStats.winner !== '') {
+        status = gameStats.winner+' Wins!';
+      } else if(gameStats.draw) {
+        status = "Its A Draw!";
+      }
+    } else {
+      status = 'Next player: '+ (this.state.xIsNext ? 'X' : 'O');
+    }
+    
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1>
-            <code> {this.state.date.toLocaleTimeString() } </code>
-          </h1>
-          <a
-            className="App-link"
-            href="https://github.com/benedit-tshaba"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Benedict Tshaba
-          </a>
-        </header>
+      <div className="game">
+        <div className="game-board">
+          <Board
+            squares = { current.squares }
+            winner = { gameStats.winningLine }
+            onClick = { (i) => this.handleClick(i) }
+          />
+        </div>
+        <div className="game-info">
+          <div className="status success">{ status }</div>
+          <div className="game-info">
+            <label className="status success">Play As</label><br/>
+              <input onClick={ (event) => this.selectSign(event) } type="radio" value="X" name="playas" defaultChecked={true}/>X<br/>
+              <input onClick={ (event) => this.selectSign(event) } type="radio" value="O" name="playas" />O<br/>
+          </div>
+          <ol>{ moves }</ol>
+          <div>
+            <button onClick={ (history) => this.sortList(this.state.history) } className="ctrl">Sort History</button>
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default App;
+function gameState(board) {
+  const state = {
+    over: false,
+    draw: false,
+    winner: '',
+    winningLine: []
+  };
+  
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  
+  for(let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if( board[a] && board[a] === board[b] && board[a] === board[c] ) {
+      state.winner = board[a];
+      state.winningLine = [a,b,c];
+      state.over = true;
+      return state;
+    }
+  }
+  
+  if( _isDraw(board) ) {
+    state.draw = true;
+    state.over = true;
+    return state;
+  }
+  
+  return state;
+}
+
+function _isDraw(squares) {
+  let draw = squares.filter( (square) => square === null  );
+  //console.log(draw);
+  return (draw.length === 0);
+}
+
+/*const max = (a, b) => {
+  let ret = (a < b) ? b : a;
+  return ret;
+};
+
+const min = (a, b) => {
+  let ret = (a < b) ? a : b;
+  return ret;
+};*/
+
+// ========================================
+
+export default Game;
