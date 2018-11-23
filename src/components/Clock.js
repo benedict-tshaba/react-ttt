@@ -29,14 +29,6 @@ class Clock extends Component {
         <header className="App-header">
           <h3>
             <code> {this.state.date.toLocaleTimeString() } </code>
-            <a
-            className="App-link"
-            href="https://github.com/benedit-tshaba"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Benedict Tshaba
-          </a>
           </h3>
         </header>
       </div>

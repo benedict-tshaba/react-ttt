@@ -47,7 +47,7 @@ class Game extends Component {
       return;
     }
 
-    let move = ai.search(squares);
+    let move = ai.play(squares);
     squares[move] = this.state.aiPlayer;
 
     this.setState({ 
@@ -79,6 +79,10 @@ class Game extends Component {
     //if next player is X but the player is not
     //stop the play
     if (this.state.xIsNext && this.state.huPlayer !== 'X') {
+      return;
+    }
+
+    if (!this.state.aiTurn && !this.state.xIsNext && this.state.huPlayer !== 'O') {
       return;
     }
     
@@ -124,10 +128,8 @@ class Game extends Component {
   }
 
   selectSign(evt) {
-    if (this.state.player) {
-      return;
-    }
     this.setState({
+      aiTurn: false,
       huPlayer: evt.target.value,
       aiPlayer: (evt.target.value === 'X') ? 'O' : 'X',
     });
@@ -186,9 +188,10 @@ class Game extends Component {
           />
         </div>
         <div className="game-info">
+          <div className="status warning">{'You are: '+this.state.huPlayer}</div>
           <div className="status success">{ status }</div>
           <div className="game-info">
-            <label className="status success">Play As</label><br/>
+            <label className="status">Play As</label><br/>
               <input onClick={ (event) => this.selectSign(event) } type="radio" value="X" name="playas" />X<br/>
               <input onClick={ (event) => this.selectSign(event) } type="radio" value="O" name="playas" defaultChecked={true}/>O<br/>
           </div>

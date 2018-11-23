@@ -1,16 +1,22 @@
 body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  background-color: #282c34;
-  font: 18px "Century Gothic", Futura, sans-serif;
+  background-color: #aaa;
+  font: 16px "Century Gothic", Futura, sans-serif;
   margin: 20px;
 }
 
 ol, ul {
   padding-left: 30px;
+  list-style: none;
 }
 
 .ctrl {
   border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
 }
 
 .board-row:after {
@@ -33,27 +39,21 @@ ol, ul {
 }
 
 .square {
-  background: #001166;
-  border: 1px solid #999;
+  background: #c6c6c6; 
+  color: #6c6c6c;
   float: left;
   font-size: 64px;
-  font-weight: bold;
-  line-height: 34px;
-  height: 134px;
+  line-height: 30px;
+  height: 130px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 134px;
+  width: 130px;
 }
 
 .square:focus {
-  background-color: #0011cc;
-  outline: none;
-}
-
-.square:hover {
-  background-color: #0022dd;
+  background-color: #a2bbdd;
   outline: none;
 }
 
@@ -77,20 +77,46 @@ ol, ul {
 
 .current-move {
   font-weight: 700;
-  background-color: yellow;
+  background-color: #216631;
 }
 
 .highlight {
-  background-color: #338822;
-  border: 1px solid #999;
+  background-color: #a2bbdd;
+  color: green;
+  border: 0px solid #c6c6c6;
   float: left;
-  font-size: 64px;
+  font-size: 60px;
   font-weight: bold;
-  line-height: 34px;
-  height: 134px;
+  line-height: 30px;
+  height: 130px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 134px;
+  width: 130px;
+}
+
+@media(max-width: 600px) {
+  .square {
+    font-size: 34px;
+    line-height: 17px;
+    height: 67px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 67px;
+  }
+
+  .highlight {
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 17px;
+    height: 67px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    width: 67px;
+  }
 }
