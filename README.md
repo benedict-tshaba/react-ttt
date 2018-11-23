@@ -12,7 +12,7 @@ This is my first React App, I was following a tutorial and then it just took a l
 
 2. [x] Bold the currently selected item in the move list.
 
-3. [] Rewrite Board to use two loops to make the squares instead of hardcoding them.
+3. [ ] Rewrite Board to use two loops to make the squares instead of hardcoding them.
 
 4. [x] Add a toggle button that lets you sort the moves in either ascending or descending order.
 
@@ -22,8 +22,8 @@ This is my first React App, I was following a tutorial and then it just took a l
 
 7. [x] Add minimax AI
 
-8. [] Make it multiplayer using WebSockets?
+8. [ ] Make it multiplayer using WebSockets?
 
-9. [] Add statistics? - How many times a particular player has played, won, lost, etc...
+9. [ ] Add statistics? - How many times a particular player has played, won, lost, etc...
 
-10. [] Add sounds - This should be easy to do if I get time.
+10. [ ] Add sounds - This should be easy to do if I get time.
