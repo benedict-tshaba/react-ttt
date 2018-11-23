@@ -2,7 +2,7 @@
 
 This is my first React App, I was following a tutorial and then it just took a life of its own.
 
-### Try it out here: [React-TTT](https://benedict-tshaba.github.io/react-ttt "React Tic Tac Toe")
+### Try it out here: [React-TTT](https://benedict-tshaba.github.io/react-ttt/ "React Tic Tac Toe")
 
 ### Screenshot:
 ![App Screenshot](./public/Screen.png)
